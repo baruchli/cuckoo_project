@@ -20,7 +20,7 @@ The system consists of:
 - **PostgreSQL Database**: Stores Conductors, Cuckoo clients, Trustees, and scheduled sounds.
 - **Cuckoo Clients**: Devices that play scheduled sounds.
 
-## Entity Relationship Diagram
+## Database ERD 
 
 ```mermaid
 erDiagram
@@ -51,6 +51,34 @@ erDiagram
     CuckooClients ||--o{ ScheduledSounds: "1 to many"
 ```
 
+## Bot and Flask Interaction ERD
+
+```mermaid
+erDiagram
+    TelegramBot {
+        int id PK
+        string token
+    }
+    FlaskApp {
+        int id PK
+        string api_url
+    }
+    RESTCalls {
+        int id PK
+        int bot_id FK
+        int flask_app_id FK
+        string endpoint
+        string method
+    }
+
+    TelegramBot ||--o{ RESTCalls: "1 to many"
+    FlaskApp ||--o{ RESTCalls: "1 to many"
+```
+
+- **Telegram Bot**: Manages interaction with users via Telegram.
+- **Flask Application**: Handles backend logic and database interactions.
+- **REST Calls**: Defines the API endpoints and methods used for communication between the Telegram Bot and Flask Application.
+
 - **Conductors**: Registered users who schedule sounds.
 - **Cuckoo Clients**: Devices that play the sounds.
 - **Trustees**: Permissions table linking Conductors to Cuckoo Clients.
@@ -60,7 +88,7 @@ erDiagram
 
 - Docker and Docker Compose
 - Telegram bot token
-- Python 3.x
+- Python 3.11
 
 ## Installation and Setup
 
