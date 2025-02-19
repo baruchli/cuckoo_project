@@ -22,7 +22,34 @@ The system consists of:
 
 ## Entity Relationship Diagram
 
-TO BE ADDED
+```mermaid
+erDiagram
+    Conductors {
+        int id PK
+        string name
+        string telegram_id
+    }
+    CuckooClients {
+        int id PK
+        string name
+        string location
+    }
+    Trustees {
+        int id PK
+        int conductor_id FK
+        int cuckoo_id FK
+    }
+    ScheduledSounds {
+        int id PK
+        int cuckoo_id FK
+        string sound_file
+        datetime schedule_time
+    }
+
+    Conductors ||--o{ Trustees: "1 to many"
+    CuckooClients ||--o{ Trustees: "1 to many"
+    CuckooClients ||--o{ ScheduledSounds: "1 to many"
+```
 
 - **Conductors**: Registered users who schedule sounds.
 - **Cuckoo Clients**: Devices that play the sounds.
