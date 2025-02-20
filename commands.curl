@@ -1,0 +1,38 @@
+
+-- Create --
+curl -X POST http://127.0.0.1:5000/cron_schedules/table
+curl -X POST http://127.0.0.1:5000/devices/table
+curl -X POST http://127.0.0.1:5000/permissions/table
+curl -X POST http://127.0.0.1:5000/users/table
+
+-- Add --
+curl -X POST http://127.0.0.1:5000/cron_schedules -H "Content-Type: application/json" -d '{"key": "value"}'
+curl -X POST http://127.0.0.1:5000/devices -H "Content-Type: application/json" -d '{"id": "1", "device_name": "value", "device_type": "value"}'
+curl -X POST http://127.0.0.1:5000/permissions -H "Content-Type: application/json" -d '{"user_id": "value", "device_id": "value"}'
+curl -X POST http://127.0.0.1:5000/users -H "Content-Type: application/json" -d '{"id": 1, "username": "example", "email": "example@example.com"}'
+curl -X POST http://127.0.0.1:5000/cron_schedules \
+  -H "Content-Type: application/json" \
+  -d '{
+    "device_id": 1,
+    "cron_string": "0 8 * * *",
+    "user_id": 798152449,
+    "activation_timestamp": "2024-02-15T10:30:00Z",
+    "sound_file": "/shared/filename.ogg)"
+  }'
+
+-- Get records --
+curl -X GET -H "Accept: application/json" http://127.0.0.1:5000/cron_schedules/records | jq
+curl -X GET http://127.0.0.1:5000/cron_schedules/file/5 --output 123_30_12.mp3
+curl -X GET http://127.0.0.1:5000/cron_schedules/user/798152449/device/2 | jq
+curl -X GET http://127.0.0.1:5000/devices/records
+curl -X GET http://127.0.0.1:5000/permissions/records
+curl -X GET http://127.0.0.1:5000/users/records
+
+-- Update --
+curl -X PUT http://127.0.0.1:5000/cron_schedules/<schedule_id> -H "Content-Type: application/json" -d '{"key": "value"}'
+curl -X PUT http://127.0.0.1:5000/devices/<device_id> -H "Content-Type: application/json" -d '{"device_name": "value", "device_type": "value", "public_use": true}'
+curl -X PUT http://127.0.0.1:5000/permissions/<permission_id> -H "Content-Type: application/json" -d '{"user_id": "value", "device_id": "value"}'
+curl -X PUT http://127.0.0.1:5000/users/<user_id> -H "Content-Type: application/json" -d '{"username": "new_username", "email": "new_email@example.com"}'
+
+-- Get allowed devices --
+curl -X GET http://127.0.0.1:5000/permissions/accessible-devices/<user_id>

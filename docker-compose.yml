@@ -1,0 +1,100 @@
+services:
+  postgres:
+    container_name: my_postgres_container
+    image: postgres:15-alpine
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.5"
+    volumes:
+      - /mnt/usb:/var/lib/postgresql/data
+    restart: no
+    ports:
+      - "127.0.0.1:5432:5432"
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_LOGGING_LEVEL=${POSTGRES_LOGGING_LEVEL}
+    networks:
+      - flask-postgres-network  # Join custom network 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    command:
+      - "postgres"
+#      - "-c"
+#      - "log_statement=all"
+      - "-c"
+      - "log_destination=stderr"
+      - "-c"
+      - "logging_collector=off"
+#      - "-c"
+#      - "log_directory=/var/log/postgresql"
+#      - "-c"
+#      - "log_filename=postgresql-%Y-%m-%d_%H%M%S.log"
+      - "-c"
+      - "log_min_messages=${POSTGRES_LOGGING_LEVEL}"
+
+  flask:
+    container_name: my_flask_container
+    image: python-flask:3.11-slim
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "1.5"
+
+#    build:
+#      context: /home/pi/cuckoo2/Flask
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - "./Flask:/app"  # Mount WSL directory into Docker container
+      - shared-data:/shared  # Mount the shared volume        
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "run.py", "--db-test"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 20s
+    networks:
+      - flask-postgres-network
+
+  bot:
+    container_name: my_bot_container
+    image: python-bot:3.11-slim
+    build:
+      context: /home/pi/cuckoo2/Bot
+    volumes:
+      - "./Bot:/app"
+      - shared-data:/shared  # Mount the shared volume      
+    env_file:
+      - .env
+      - .env.local
+#    environment:
+#      - PYTHON_LOG_LEVEL=WARNING
+    depends_on:
+      flask:
+        condition: service_healthy
+    networks:
+      - flask-postgres-network
+
+networks:
+  flask-postgres-network:  # Define the network
+    driver: bridge
+
+volumes:
+  shared-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./shared_data
