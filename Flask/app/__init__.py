@@ -5,16 +5,16 @@ This module initializes the Flask application, sets up configurations, and defin
 import os
 from flask import Flask, jsonify
 from dotenv import load_dotenv
-from app.logger import logger
-from app.config import Config
-from app.extensions import init_extensions
-from app.extensions import db
-from app.routes.user_routes import user_bp
-from app.routes.cron_schedule_routes import cron_schedule_bp
-from app.routes.device_routes import devices_bp
-from app.routes.permission_routes import permission_bp
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
+# Update imports to use relative imports
+from .logger import logger
+from .config import Config
+from .extensions import init_extensions, db
+from .routes.user_routes import user_bp
+from .routes.cron_schedule_routes import cron_schedule_bp
+from .routes.device_routes import devices_bp
+from .routes.permission_routes import permission_bp
 
 
 def test_db_connection():
@@ -101,3 +101,6 @@ def create_app():
 
     logger.info("Application startup complete")
     return app
+
+# Explicitly export the names
+__all__ = ['create_app', 'init_db_test']

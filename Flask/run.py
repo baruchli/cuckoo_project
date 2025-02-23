@@ -9,7 +9,7 @@ import os
 import sys
 import argparse
 import socket
-from app import create_app, init_db_test
+from app import create_app, init_db_test  # This import should now work correctly
 from app.logger import logger
 
 

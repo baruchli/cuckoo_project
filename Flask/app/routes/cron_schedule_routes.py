@@ -4,10 +4,12 @@ This module provides endpoints for managing cron schedules including creating,
 reading, updating, and deleting schedule records.
 """
 
+from io import BytesIO
+
 from flask import Blueprint, jsonify, request, send_file, abort
 from marshmallow import ValidationError
 from sqlalchemy.exc import DatabaseError
-from io import BytesIO
+
 from app.logger import logger
 from app.services.cron_schedule_service import (
     CronScheduleService,
@@ -373,7 +375,6 @@ def get_cron_schedule_file(schedule_id):
             as_attachment=True,
             download_name=f'schedule_{schedule_id}_file.bin'
         )
-    except Exception as e:
+    except (DatabaseError, IOError, ValueError) as e:
         logger.error("Error retrieving file for cron schedule with ID %s: %s", schedule_id, str(e))
         abort(500, description=str(e))
-
