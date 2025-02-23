@@ -1,5 +1,8 @@
 # Cuckoo Project
 
+![Pylint](https://github.com/baruchli/cuckoo_project/actions/workflows/pylint.yml/badge.svg)
+
+
 ## Description
 
 Cuckoo Project enables scheduling of custom sounds on a distributed mesh of clients ("Cuckoos") through a Telegram bot interface. Authorized users, called "Conductors," can remotely program Cuckoo clients to play sounds according to a schedule. The system stores schedules per user and Cuckoo client ID using a PostgreSQL database.
